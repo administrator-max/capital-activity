@@ -6,10 +6,15 @@ const path       = require('path');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 const PIN  = process.env.DASHBOARD_PIN;
+const PIN_DISABLED = process.env.DISABLE_PIN === 'true';
 
-if (!PIN) {
+if (!PIN && !PIN_DISABLED) {
   console.error('❌  DASHBOARD_PIN is not set in environment variables.');
   process.exit(1);
+}
+
+if (PIN_DISABLED) {
+  console.warn('⚠️   PIN AUTH DISABLED — dashboard is publicly accessible.');
 }
 
 // ── TRUST HEROKU PROXY (wajib agar secure cookie bekerja) ──
@@ -44,6 +49,7 @@ app.use((req, res, next) => {
 
 // ── AUTH GUARD ──────────────────────────────────────────────
 function requireAuth(req, res, next) {
+  if (PIN_DISABLED) return next();
   if (req.session && req.session.authenticated) return next();
   res.redirect('/pin');
 }
@@ -57,12 +63,14 @@ app.get('/robots.txt', (req, res) => {
 
 // PIN page (GET)
 app.get('/pin', (req, res) => {
+  if (PIN_DISABLED) return res.redirect('/');
   if (req.session && req.session.authenticated) return res.redirect('/');
   res.sendFile(path.join(__dirname, 'views', 'pin.html'));
 });
 
 // PIN verification (POST)
 app.post('/pin', (req, res) => {
+  if (PIN_DISABLED) return res.redirect('/');
   const entered = (req.body.pin || '').trim();
   if (entered === PIN) {
     req.session.authenticated = true;
