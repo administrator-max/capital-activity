@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Capital Activity Report - Family Office Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg-cream: #f5f1e8;
+  --bg-cream-dark: #ede7d8;
+  --header-navy: #0a1628;
+  --header-navy-dark: #06101e;
+  --gold: #c9a961;
+  --gold-deep: #a8893d;
+  --navy: #1a2b4a;
+  --green-accent: #2d6e4e;
+  --teal-accent: #4a8a8a;
+  --red-brown: #8b4a3a;
+  --text-dark: #1a2b4a;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+  --card-bg: #ffffff;
+  --border-light: #e5e0d3;
+  --pos: #2d6e4e;
+  --neg: #b94a3a;
+  --entity-5e: #1a2b4a;
+  --entity-ath: #c9a961;
+  --entity-lpe: #2d6e4e;
+  --entity-zpp: #4a8a8a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: var(--bg-cream);
+  color: var(--text-dark);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+.header {
+  background: var(--header-navy);
+  padding: 22px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(201,169,97,0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.brand {
+  display: flex;
+  flex-direction: column;
+}
+.brand-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 28px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  line-height: 1;
+}
+.brand-sub {
+  color: rgba(245,241,232,0.7);
+  font-size: 10px;
+  letter-spacing: 3px;
+  font-weight: 400;
+  margin-top: 6px;
+  text-transform: uppercase;
+}
+.nav-tabs {
+  display: flex;
+  gap: 38px;
+  align-items: center;
+}
+.nav-tab {
+  color: rgba(245,241,232,0.7);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 0;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: none;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  font-family: inherit;
+}
+.nav-tab:hover { color: var(--gold); }
+.nav-tab.active {
+  color: #fff;
+  border-bottom-color: var(--gold);
+}
+.month-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.month-select {
+  background: transparent;
+  border: 1px solid rgba(201,169,97,0.4);
+  color: var(--gold);
+  padding: 8px 30px 8px 14px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><polygon points='0,2 10,2 5,8' fill='%23c9a961'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 9px;
+}
+.month-select option { background: var(--header-navy); color: var(--gold); }
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #5ec97a;
+  box-shadow: 0 0 6px rgba(94,201,122,0.6);
+}
+.export-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 6px 16px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: inherit;
+  cursor: pointer;
+  margin-left: 16px;
+  transition: all 0.2s;
+}
+.export-btn:hover { background: var(--gold); color: var(--header-navy); }
+
+.entity-tabs {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+.entity-tab {
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 8px 2px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(245,241,232,0.65);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.entity-tab:hover { color: var(--gold); }
+.entity-tab.active {
+  color: #fff;
+  border-bottom-color: var(--gold);
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot-5e { background: var(--entity-5e); }
+.dot-ath { background: var(--entity-ath); }
+.dot-lpe { background: var(--entity-lpe); }
+.dot-zpp { background: var(--entity-zpp); }
+/* Lighten 5E dot inside the dark header so it stays visible */
+.header .dot-5e { background: #6a86b3; }
+
+main { padding: 32px 48px; }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 18px;
+  margin-bottom: 32px;
+}
+.kpi-card {
+  background: var(--card-bg);
+  border-radius: 4px;
+  padding: 22px 24px 18px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(10,22,40,0.04);
+  border: 1px solid var(--border-light);
+}
+.kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold);
+}
+.kpi-card.kpi-navy::before { background: var(--navy); }
+.kpi-card.kpi-green::before { background: var(--green-accent); }
+.kpi-card.kpi-teal::before { background: var(--teal-accent); }
+.kpi-card.kpi-orange::before { background: #d97f3a; }
+.kpi-card.kpi-red::before { background: var(--red-brown); }
+.kpi-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: var(--navy);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.kpi-card.kpi-navy .kpi-label { color: var(--navy); }
+.kpi-card.kpi-orange .kpi-label { color: #d97f3a; }
+.kpi-card.kpi-red .kpi-label { color: var(--red-brown); }
+.kpi-card.kpi-green .kpi-label { color: var(--green-accent); }
+.kpi-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 38px;
+  font-weight: 500;
+  color: var(--text-dark);
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+}
+.kpi-value .currency {
+  font-size: 22px;
+  vertical-align: super;
+  font-weight: 400;
+  margin-right: 1px;
+}
+.kpi-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+}
+.kpi-tag {
+  position: absolute;
+  bottom: 10px;
+  right: 16px;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-light);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.kpi-value.pos { color: var(--pos); }
+.kpi-value.neg { color: var(--neg); }
+
+.section {
+  background: var(--card-bg);
+  border-radius: 4px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 1px 3px rgba(10,22,40,0.04);
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--text-dark);
+  margin-bottom: 20px;
+}
+.section-title-left {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+  text-align: left;
+}
+.section-tag {
+  float: right;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-light);
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+.section-toggle {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+.section-toggle:hover { opacity: 0.75; }
+.toggle-chevron {
+  font-style: normal;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+  margin-left: 12px;
+  flex-shrink: 0;
+}
+.toggle-chevron.open { transform: rotate(180deg); }
+.collapsible-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease, margin-top 0.3s ease;
+  margin-top: 0;
+}
+.collapsible-body.open {
+  max-height: 9999px;
+  margin-top: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-light);
+}
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-dark);
+}
+tr:last-child td { border-bottom: 0; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.num.pos { color: var(--pos); }
+.num.neg { color: var(--neg); }
+.entity-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  background: var(--bg-cream);
+  color: var(--text-dark);
+  border: 1px solid var(--border-light);
+}
+.entity-pill.e-5e { color: #fff; background: var(--entity-5e); border-color: var(--entity-5e); }
+.entity-pill.e-ath { color: var(--text-dark); background: var(--entity-ath); border-color: var(--entity-ath); }
+.entity-pill.e-lpe { color: #fff; background: var(--entity-lpe); border-color: var(--entity-lpe); }
+.entity-pill.e-zpp { color: #fff; background: var(--entity-zpp); border-color: var(--entity-zpp); }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+.chart-wrap {
+  position: relative;
+  height: 320px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.chart-wrap canvas { max-height: 280px; }
+.chart-legend {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+.chart-legend .lg-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+.chart-legend .lg-row .lab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.cat-block {
+  margin-top: 16px;
+}
+.cat-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.subtle-row td { color: var(--text-muted); font-size: 12px; }
+
+.entity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid var(--border-light);
+}
+.entity-header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  font-size: 32px;
+  color: var(--text-dark);
+}
+.entity-header .meta {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.bank-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--border-light);
+  border-radius: 2px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+  background: var(--bg-cream);
+}
+.cat-tag {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.tx-cat-investment { color: var(--navy); }
+.tx-cat-operation { color: var(--gold-deep); }
+.tx-cat-financing { color: var(--green-accent); }
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+footer {
+  padding: 24px 48px;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-light);
+  text-transform: uppercase;
+  border-top: 1px solid var(--border-light);
+  margin-top: 32px;
+}
+
+.entity-page { display: none; }
+.entity-page.active { display: block; }
+
+.three-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+}
+
+.unfunded-impact-y { color: var(--gold-deep); font-weight: 700; }
+.unfunded-impact-n { color: var(--text-muted); }
+
+@media print {
+  body { background: #fff; }
+  .header, .subnav { background: var(--header-navy) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .export-btn, .nav-tabs { display: none !important; }
+  .entity-page { display: block !important; page-break-before: always; }
+  .entity-page.summary-page { page-break-before: auto; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="brand">
+    <div class="brand-name">CAPITAL ACTIVITY</div>
+    <div class="brand-sub">Family Office &middot; Capital Activity Report</div>
+  </div>
+  <nav class="entity-tabs">
+    <button class="entity-tab active" data-view="summary">Summary</button>
+    <button class="entity-tab" data-view="5E"><span class="dot dot-5e"></span>5E</button>
+    <button class="entity-tab" data-view="ATH"><span class="dot dot-ath"></span>ATH</button>
+    <button class="entity-tab" data-view="LPE"><span class="dot dot-lpe"></span>LPE</button>
+    <button class="entity-tab" data-view="ZPP"><span class="dot dot-zpp"></span>ZPP</button>
+  </nav>
+  <div class="month-dropdown">
+    <span style="color: rgba(245,241,232,0.65); font-size: 10px; letter-spacing: 2px;">AS OF</span>
+    <select id="monthSelect" class="month-select"></select>
+    <span class="live-dot"></span>
+    <button class="export-btn" onclick="(function(){ const sel = document.getElementById('monthSelect'); const dt = new Date(sel.value + '-01'); const label = dt.toLocaleString('en-US',{month:'long'}) + ' ' + dt.getFullYear(); window.open('Capital Activity Report - ' + label + '.pdf'); })()">Print / PDF</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- =============== SUMMARY VIEW =============== -->
+  <section id="page-summary" class="entity-page active summary-page">
+
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-navy">
+        <div class="kpi-label">Total Cash Balance</div>
+        <div class="kpi-value" id="kpi-cash"><span class="currency">$</span>—</div>
+        <div class="kpi-sub" id="kpi-cash-sub">across all entities &middot; banks</div>
+        <div class="kpi-tag">Cash</div>
+      </div>
+      <div class="kpi-card kpi-green">
+        <div class="kpi-label">Total Committed</div>
+        <div class="kpi-value" id="kpi-committed"><span class="currency">$</span>—</div>
+        <div class="kpi-sub">across all funds</div>
+        <div class="kpi-tag">Committed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Unfunded</div>
+        <div class="kpi-value" id="kpi-unfunded"><span class="currency">$</span>—</div>
+        <div class="kpi-sub">remaining commitments</div>
+        <div class="kpi-tag">Unfunded</div>
+      </div>
+      <div class="kpi-card kpi-teal">
+        <div class="kpi-label">Net Cash Movement</div>
+        <div class="kpi-value" id="kpi-net"><span class="currency">$</span>—</div>
+        <div class="kpi-sub" id="kpi-net-sub">selected month</div>
+        <div class="kpi-tag">Monthly</div>
+      </div>
+      <div class="kpi-card kpi-orange">
+        <div class="kpi-label">Funded Ratio</div>
+        <div class="kpi-value" id="kpi-funded">—</div>
+        <div class="kpi-sub">% committed already called</div>
+        <div class="kpi-tag">Ratio</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="section">
+        <h3 class="section-title-left">Entity Summary <span class="section-tag">By Entity</span></h3>
+        <table id="entity-summary-tbl">
+          <thead>
+            <tr>
+              <th>Entity</th>
+              <th class="num">Cash Balance</th>
+              <th class="num">Committed</th>
+              <th class="num">Unfunded</th>
+              <th class="num">Net Cash (Mo)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="section">
+        <h3 class="section-title-left">Cash Allocation <span class="section-tag">By Entity</span></h3>
+        <div class="chart-wrap">
+          <canvas id="donut"></canvas>
+          <div class="chart-legend" id="donut-legend"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title-left">Summary Transactions <span class="section-tag" id="summary-rollup-tag">Selected Month</span></h3>
+      <p style="font-size:11px; color: var(--text-muted); margin-bottom: 12px;">Sum of <strong>Net Amount (USD)</strong> per transaction type, accumulated by entity for the selected month.</p>
+      <div id="rollup-tbl-wrap"></div>
+    </div>
+
+    <div class="two-col">
+      <div class="section">
+        <h3 class="section-title-left">Monthly Cash Trend <span class="section-tag">Jan-Mar 2026</span></h3>
+        <div class="chart-wrap"><canvas id="cashTrend"></canvas></div>
+      </div>
+      <div class="section">
+        <h3 class="section-title-left">Capital Calls vs Distributions <span class="section-tag" id="summary-cashflow-tag">Selected Month</span></h3>
+        <div class="chart-wrap"><canvas id="cashflowChart"></canvas></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =============== ENTITY PAGES =============== -->
+  <!-- Built dynamically -->
+  <div id="entity-pages-container"></div>
+
+</main>
+
+<footer>
+  Family Office &middot; Capital Activity Report &middot; Master data sourced from Capital Activity Report.xlsx
+</footer>
+
+<script>
+const PAYLOAD = {"months":["2026-01","2026-02","2026-03"],"entities":["5E","ATH","LPE","ZPP"],"entity_banks":{"5E":["BOS","Barclays","DBS"],"ATH":["DBS"],"LPE":["BOS"],"ZPP":["BOS"]},"beg_bal":{"5E":3199516.21,"ATH":1202751.9600000011,"LPE":1329298.3999999955,"ZPP":99466.27},"beg_bal_bank":{"5E|BOS":41266.53000000026,"5E|Barclays":2739893.1699999995,"5E|DBS":418356.5100000002,"ATH|DBS":1202751.9600000011,"LPE|BOS":1329298.3999999955,"ZPP|BOS":99466.27},"committed_total_by_entity":{"5E":17000000.0,"ATH":6000000.0,"LPE":12000000.0,"ZPP":2100000.0},"commitments":[{"entity":"5E","bank":"BOS","counterparty":"5E_MSA","committed":1000000.0},{"entity":"5E","bank":"BOS","counterparty":"5E_Colbeck","committed":5000000.0},{"entity":"5E","bank":"BOS","counterparty":"5E_LEX","committed":5000000.0},{"entity":"5E","bank":"BOS","counterparty":"5E_NB","committed":1000000.0},{"entity":"5E","bank":"BOS","counterparty":"5E_PSG","committed":5000000.0},{"entity":"5E","bank":"Barclays","counterparty":"5E_MSA","committed":5000000.0},{"entity":"5E","bank":"Barclays","counterparty":"5E_Colbeck","committed":1000000.0},{"entity":"5E","bank":"Barclays","counterparty":"5E_LEX","committed":5000000.0},{"entity":"5E","bank":"Barclays","counterparty":"5E_NB","committed":1000000.0},{"entity":"5E","bank":"DBS","counterparty":"5E_MSA","committed":5000000.0},{"entity":"5E","bank":"DBS","counterparty":"5E_Colbeck","committed":1000000.0},{"entity":"5E","bank":"DBS","counterparty":"5E_LEX","committed":5000000.0},{"entity":"5E","bank":"DBS","counterparty":"5E_NB","committed":1000000.0},{"entity":"ATH","bank":"DBS","counterparty":"ATH_Bonaccord","committed":5000000.0},{"entity":"ATH","bank":"DBS","counterparty":"ATH_CF_COOP","committed":1000000.0},{"entity":"LPE","bank":"BOS","counterparty":"LPE_Clearlake","committed":5000000.0},{"entity":"LPE","bank":"BOS","counterparty":"LPE_Galvanize","committed":1000000.0},{"entity":"LPE","bank":"BOS","counterparty":"LPE_Thoma_Bravo","committed":5000000.0},{"entity":"LPE","bank":"BOS","counterparty":"LPE_Cambridge","committed":1000000.0},{"entity":"ZPP","bank":"BOS","counterparty":"ZPP_Ascof","committed":2100000.0}],"counterparties":[{"entity":"5E","counterparty":"5E_Colbeck","committed":5000000.0,"banks":["BOS","Barclays","DBS"]},{"entity":"5E","counterparty":"5E_LEX","committed":5000000.0,"banks":["BOS","Barclays","DBS"]},{"entity":"5E","counterparty":"5E_PSG","committed":5000000.0,"banks":["BOS"]},{"entity":"5E","counterparty":"5E_MSA","committed":1000000.0,"banks":["BOS","Barclays","DBS"]},{"entity":"5E","counterparty":"5E_NB","committed":1000000.0,"banks":["BOS","Barclays","DBS"]},{"entity":"ATH","counterparty":"ATH_Bonaccord","committed":5000000.0,"banks":["DBS"]},{"entity":"ATH","counterparty":"ATH_CF_COOP","committed":1000000.0,"banks":["DBS"]},{"entity":"LPE","counterparty":"LPE_Clearlake","committed":5000000.0,"banks":["BOS"]},{"entity":"LPE","counterparty":"LPE_Thoma_Bravo","committed":5000000.0,"banks":["BOS"]},{"entity":"LPE","counterparty":"LPE_Galvanize","committed":1000000.0,"banks":["BOS"]},{"entity":"LPE","counterparty":"LPE_Cambridge","committed":1000000.0,"banks":["BOS"]},{"entity":"ZPP","counterparty":"ZPP_Ascof","committed":2100000.0,"banks":["BOS"]}],"unfunded_detail":{"2026-01":{"5E":{"5E_MSA":100271.06000000006,"5E_Colbeck":3378155.0,"5E_LEX":2463104.0,"5E_NB":334052.0,"5E_PSG":3839748.0},"ATH":{"ATH_Bonaccord":3568644.9099999997,"ATH_CF_COOP":800000.0},"LPE":{"LPE_Clearlake":4150256.5,"LPE_Galvanize":507587.08,"LPE_Thoma_Bravo":4528558.0,"LPE_Cambridge":1000000.0},"ZPP":{"ZPP_Ascof":1569160.77}},"2026-02":{"5E":{"5E_MSA":100271.06000000006,"5E_Colbeck":2888712.0,"5E_LEX":2505507.0,"5E_NB":369645.0,"5E_PSG":3839748.0},"ATH":{"ATH_Bonaccord":3588504.8,"ATH_CF_COOP":800000.0},"LPE":{"LPE_Clearlake":4150256.5,"LPE_Galvanize":507587.08,"LPE_Thoma_Bravo":4528558.0,"LPE_Cambridge":1000000.0},"ZPP":{"ZPP_Ascof":1569160.77}},"2026-03":{"5E":{"5E_MSA":100271.06000000006,"5E_Colbeck":3023546.0,"5E_LEX":2548181.0,"5E_NB":369645.0,"5E_PSG":3656751.0},"ATH":{"ATH_Bonaccord":3338504.8,"ATH_CF_COOP":620000.0},"LPE":{"LPE_Clearlake":4150256.5,"LPE_Galvanize":489587.08,"LPE_Thoma_Bravo":4528558.0,"LPE_Cambridge":1000000.0},"ZPP":{"ZPP_Ascof":1569160.77}}},"transactions":[{"date":"2026-01-06T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_Invesco","gross":null,"net":12183.55,"running_balance":1341481.9499999955,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-07T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_Blackstone","gross":null,"net":13660.16,"running_balance":1355142.1099999954,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-08T00:00:00","month":"2026-01","entity":"5E","bank":"Barclays","category":"Investment","type":"Cash Capital Call","unfunded_impact":"Yes","counterparty":"5E_MSA","gross":-4931.51,"net":-4931.51,"running_balance":2734961.6599999997,"unfunded_remaining":100271.06000000017,"source_doc":"MSA CC 17","source_url":"https://drive.google.com/file/d/1bYDujXom-Zeeh8I69ncuBiFz5AbJM7jT/preview"},{"date":"2026-01-08T00:00:00","month":"2026-01","entity":"5E","bank":"Barclays","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"Barclays","gross":null,"net":-5.38,"running_balance":2734956.28,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-12T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_OTIC","gross":null,"net":12185.53,"running_balance":1367327.6399999955,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-13T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_KKR","gross":null,"net":23684.38,"running_balance":1391012.0199999954,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-15T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Operation","type":"Legal Fee","unfunded_impact":"","counterparty":"Withers Khattarwong LLP","gross":null,"net":-1969.5,"running_balance":1389042.5199999954,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-15T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Investment","type":"Cash Capital Call","unfunded_impact":"Yes","counterparty":"LPE_Clearlake","gross":-499786.9,"net":-499786.9,"running_balance":889255.6199999953,"unfunded_remaining":4150256.5,"source_doc":"Clearlake CC 02","source_url":"https://drive.google.com/file/d/1qgM6eJAMpGLCXGK0IZrARkFk-k0aEnHu/preview"},{"date":"2026-01-15T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Investment","type":"Interest Income","unfunded_impact":"","counterparty":"LPE_Clearlake","gross":null,"net":908.0800000000163,"running_balance":890163.6999999953,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-15T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_JP_Morgan","gross":null,"net":13225.39,"running_balance":903389.0899999953,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-20T00:00:00","month":"2026-01","entity":"ATH","bank":"DBS","category":"Investment","type":"Cash Capital Call","unfunded_impact":"Yes","counterparty":"ATH_CF_COOP","gross":-200000.0,"net":-200000.0,"running_balance":1002751.9600000011,"unfunded_remaining":800000.0,"source_doc":"CF_COOP CC 01","source_url":"https://drive.google.com/file/d/1MUzQQmdCTTBZpItuMrrZAZ8Ec4u7AXMc/preview"},{"date":"2026-01-20T00:00:00","month":"2026-01","entity":"ATH","bank":"DBS","category":"Investment","type":"Interest Charges","unfunded_impact":"","counterparty":"ATH_CF_COOP","gross":null,"net":-7053.0,"running_balance":995698.9600000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-20T00:00:00","month":"2026-01","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-15.0,"running_balance":995683.9600000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-20T00:00:00","month":"2026-01","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-200.74,"running_balance":995483.2200000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-21T00:00:00","month":"2026-01","entity":"ZPP","bank":"BOS","category":"Operation","type":"Internal Transfer","unfunded_impact":"","counterparty":"Internal Transfer","gross":null,"net":500000.0,"running_balance":599466.27,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-21T00:00:00","month":"2026-01","entity":"ZPP","bank":"BOS","category":"Investment","type":"Cash Capital Call","unfunded_impact":"Yes","counterparty":"ZPP_Ascof","gross":-530839.23,"net":-530839.23,"running_balance":68627.04000000004,"unfunded_remaining":1569160.77,"source_doc":"Ascof CC 01","source_url":"https://drive.google.com/file/d/1kL2VPhDCmgmghcD_AN-KlmA1GzGuU9pf/preview"},{"date":"2026-01-21T00:00:00","month":"2026-01","entity":"ZPP","bank":"BOS","category":"Investment","type":"Interest Charges","unfunded_impact":"","counterparty":"ZPP_Ascof","gross":-26346.58,"net":-26346.58,"running_balance":42280.460000000036,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-21T00:00:00","month":"2026-01","entity":"ZPP","bank":"BOS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"BOS","gross":null,"net":-30.0,"running_balance":42250.460000000036,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-22T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_M&G","gross":null,"net":7491.71,"running_balance":910880.7999999953,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-27T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Investment","type":"Custody Fee","unfunded_impact":"","counterparty":"BOS","gross":null,"net":-352.55,"running_balance":910528.2499999952,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-27T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Investment","type":"Custody Fee","unfunded_impact":"","counterparty":"BOS","gross":null,"net":-3917.2,"running_balance":906611.0499999953,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-27T00:00:00","month":"2026-01","entity":"ZPP","bank":"BOS","category":"Investment","type":"Custody Fee","unfunded_impact":"","counterparty":"BOS","gross":null,"net":-7747.56,"running_balance":34502.90000000004,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-28T00:00:00","month":"2026-01","entity":"ATH","bank":"DBS","category":"Investment","type":"Participant Shares","unfunded_impact":"","counterparty":"ATH_Thrive","gross":null,"net":500000.0,"running_balance":1495483.2200000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-28T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Financing","type":"Paid in Capital","unfunded_impact":"","counterparty":"Paid in Capital","gross":null,"net":666511.0,"running_balance":1573122.0499999952,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-30T00:00:00","month":"2026-01","entity":"5E","bank":"DBS","category":"Investment","type":"Cash Distribution Recallable","unfunded_impact":"Yes","counterparty":"5E_LEX","gross":42133.0,"net":42133.0,"running_balance":460489.5100000002,"unfunded_remaining":2463104.0,"source_doc":"LEX DIST 06","source_url":"https://drive.google.com/file/d/1kPL5r1HndVVj1-PuHvcmU51sF6m4nBVT/preview"},{"date":"2026-01-30T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_PIMCO","gross":null,"net":13133.98,"running_balance":1586256.0299999951,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-30T00:00:00","month":"2026-01","entity":"LPE","bank":"BOS","category":"Operation","type":"Interest Income - CA","unfunded_impact":"","counterparty":"BOS","gross":null,"net":1847.43,"running_balance":1588103.459999995,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-30T00:00:00","month":"2026-01","entity":"ZPP","bank":"BOS","category":"Operation","type":"Interest Income - CA","unfunded_impact":"","counterparty":"BOS","gross":null,"net":43.05,"running_balance":34545.95000000004,"unfunded_remaining":null,"source_doc":""},{"date":"2026-01-31T00:00:00","month":"2026-01","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-32.0,"running_balance":1495451.2200000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-02T00:00:00","month":"2026-02","entity":"5E","bank":"DBS","category":"Investment","type":"Cash Distribution Recallable","unfunded_impact":"Yes","counterparty":"5E_NB","gross":35593.0,"net":35593.0,"running_balance":496082.5100000002,"unfunded_remaining":369645.0,"source_doc":"NB DIST 07","source_url":"https://drive.google.com/file/d/1pmwICAHVcgqhtumqbiktqhQPfFjrPkL_/preview"},{"date":"2026-02-02T00:00:00","month":"2026-02","entity":"5E","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-7.79,"running_balance":496074.7200000002,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-02T00:00:00","month":"2026-02","entity":"LPE","bank":"BOS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"BOS","gross":null,"net":1.42,"running_balance":1588104.879999995,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-04T00:00:00","month":"2026-02","entity":"ATH","bank":"DBS","category":"Investment","type":"Cash Distribution Recallable","unfunded_impact":"Yes","counterparty":"ATH_Bonaccord","gross":19859.89,"net":19859.89,"running_balance":1515311.110000001,"unfunded_remaining":3588504.96,"source_doc":"Bonaccord DIST 05","source_url":"https://drive.google.com/file/d/1hOlRuQ6TSWajiOdTS9RPcORH2Y7LD1CW/preview"},{"date":"2026-02-04T00:00:00","month":"2026-02","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-7.79,"running_balance":1515303.320000001,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-04T00:00:00","month":"2026-02","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_Invesco","gross":null,"net":12527.4,"running_balance":1600632.279999995,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-04T00:00:00","month":"2026-02","entity":"ZPP","bank":"BOS","category":"Operation","type":"Legal Fee","unfunded_impact":"","counterparty":"Withers","gross":null,"net":-5413.26,"running_balance":29132.69000000004,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-06T00:00:00","month":"2026-02","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_Blackstone","gross":null,"net":13658.23,"running_balance":1614290.509999995,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-11T00:00:00","month":"2026-02","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_KKR","gross":null,"net":23684.38,"running_balance":1637974.8899999948,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-11T00:00:00","month":"2026-02","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_OTIC","gross":null,"net":12227.78,"running_balance":1650202.6699999948,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-20T00:00:00","month":"2026-02","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_JP_Morgan","gross":null,"net":13225.39,"running_balance":1663428.0599999947,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-20T00:00:00","month":"2026-02","entity":"LPE","bank":"BOS","category":"Financing","type":"Loan Repayment (Disbursement)","unfunded_impact":"","counterparty":"Kazoku Innovations Ltd ","gross":null,"net":-245.0,"running_balance":1663183.0599999947,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-20T00:00:00","month":"2026-02","entity":"LPE","bank":"BOS","category":"Operation","type":"Professional Fee","unfunded_impact":"","counterparty":"KWCA","gross":null,"net":-2837.07,"running_balance":1660345.9899999946,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-26T00:00:00","month":"2026-02","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_M&G","gross":null,"net":6865.13,"running_balance":1667211.1199999945,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-27T00:00:00","month":"2026-02","entity":"5E","bank":"BOS","category":"Investment","type":"Cash Distribution Recallable","unfunded_impact":"Yes","counterparty":"5E_LEX","gross":42403.0,"net":42403.0,"running_balance":83669.53000000026,"unfunded_remaining":2505507.0,"source_doc":"LEX DIST 07","source_url":"https://drive.google.com/file/d/1NbD7RAuB3UauCjYosCjC7b66A0oV20aZ/preview"},{"date":"2026-02-27T00:00:00","month":"2026-02","entity":"5E","bank":"Barclays","category":"Investment","type":"Cash Capital Call","unfunded_impact":"Yes","counterparty":"5E_Colbeck","gross":-489443.0,"net":-489443.0,"running_balance":2245513.28,"unfunded_remaining":2888712.0,"source_doc":"Colbeck CC 06","source_url":"https://drive.google.com/file/d/1wslu26gjQcEj0o0fVs7Li-Z6-Vm4d5ud/preview"},{"date":"2026-02-27T00:00:00","month":"2026-02","entity":"5E","bank":"Barclays","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"Barclays","gross":null,"net":-46.07,"running_balance":2245467.21,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-27T00:00:00","month":"2026-02","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_PIMCO","gross":null,"net":13133.98,"running_balance":1680345.0999999945,"unfunded_remaining":null,"source_doc":""},{"date":"2026-02-27T00:00:00","month":"2026-02","entity":"LPE","bank":"BOS","category":"Operation","type":"Interest Income - CA","unfunded_impact":"","counterparty":"BOS","gross":null,"net":2171.09,"running_balance":1682516.1899999946,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-02T00:00:00","month":"2026-03","entity":"5E","bank":"Barclays","category":"Operation","type":"Interest Income - CA","unfunded_impact":"","counterparty":"Barclays","gross":null,"net":23249.16,"running_balance":2268716.37,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-04T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_Invesco","gross":null,"net":10309.23,"running_balance":1692825.4199999946,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-09T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Operation","type":"Legal Fee","unfunded_impact":"","counterparty":"Carey Olsen","gross":null,"net":-6451.2,"running_balance":1508852.120000001,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-09T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-15.0,"running_balance":1508837.120000001,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-09T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-31.64,"running_balance":1508805.4800000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-09T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Investment","type":"Cash Capital Call","unfunded_impact":"Yes","counterparty":"ATH_Bonaccord","gross":-250000.0,"net":-250000.0,"running_balance":1258805.4800000011,"unfunded_remaining":3338504.96,"source_doc":"Bonaccord CC 04","source_url":"https://drive.google.com/file/d/1AfnjM3itUTiWhVFHsgoV4ncdRyownttu/preview"},{"date":"2026-03-09T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-15.0,"running_balance":1258790.4800000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-09T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-201.46,"running_balance":1258589.0200000012,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-09T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Investment","type":"Participant Shares","unfunded_impact":"","counterparty":"ATH_Bonaccord","gross":null,"net":66382.95,"running_balance":1324971.9700000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-09T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_Blackstone","gross":null,"net":13667.2,"running_balance":1706492.6199999945,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-12T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Investment","type":"Participant Shares","unfunded_impact":"","counterparty":"ATH_Bonaccord","gross":null,"net":6393.0,"running_balance":1331364.9700000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-12T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_KKR","gross":null,"net":18947.5,"running_balance":1725440.1199999945,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-13T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Financing","type":"Loan Repayment (Disbursement)","unfunded_impact":"","counterparty":"Kazoku Innovations Ltd","gross":null,"net":-1675.0,"running_balance":1723765.1199999945,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-13T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Operation","type":"Membership Fee","unfunded_impact":"","counterparty":"SBF","gross":null,"net":-1023.33,"running_balance":1722741.7899999944,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-13T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Investment","type":"Cash Capital Call","unfunded_impact":"Yes","counterparty":"LPE_Galvanize","gross":-18000.0,"net":-18000.0,"running_balance":1704741.7899999944,"unfunded_remaining":489587.08,"source_doc":"Galvanize CC 03","source_url":"https://drive.google.com/file/d/1sD2iVuL7RgfQ5U87B2sE2NA530xKVj5y/preview"},{"date":"2026-03-16T00:00:00","month":"2026-03","entity":"5E","bank":"BOS","category":"Investment","type":"Non Cash Capital Call","unfunded_impact":"Yes","counterparty":"5E_Colbeck","gross":-91345.0,"net":0.0,"running_balance":83669.53000000026,"unfunded_remaining":2797367.0,"source_doc":"Colbeck DIST 03","source_url":"https://drive.google.com/file/d/1cULU7eU1KvJ1B6JP6c8UhweTZFzhxTgz/preview"},{"date":"2026-03-16T00:00:00","month":"2026-03","entity":"5E","bank":"BOS","category":"Investment","type":"Cash Distribution Recallable","unfunded_impact":"Yes","counterparty":"5E_Colbeck","gross":226179.0,"net":134834.0,"running_balance":218503.53000000026,"unfunded_remaining":3023546.0,"source_doc":""},{"date":"2026-03-16T00:00:00","month":"2026-03","entity":"5E","bank":"BOS","category":"Investment","type":"Cash Distribution Non Recallable","unfunded_impact":"No","counterparty":"5E_Colbeck","gross":47225.0,"net":47225.0,"running_balance":265728.53000000026,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-16T00:00:00","month":"2026-03","entity":"5E","bank":"BOS","category":"Investment","type":"Interest Charges","unfunded_impact":"","counterparty":"5E_Colbeck","gross":null,"net":-15471.0,"running_balance":250257.53000000026,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-16T00:00:00","month":"2026-03","entity":"ZPP","bank":"BOS","category":"Investment","type":"Cash Distribution Non Recallable","unfunded_impact":"No","counterparty":"ZPP_Ascof","gross":9289.689999999566,"net":9289.689999999566,"running_balance":38422.379999999604,"unfunded_remaining":null,"source_doc":"Ascof DIST 01","source_url":"https://drive.google.com/file/d/1rlqlQ5Rn22hPFmwpzdZryfeBwiQfdpIN/preview"},{"date":"2026-03-17T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_JP_Morgan","gross":null,"net":13225.39,"running_balance":1717967.1799999943,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-19T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_OTIC","gross":null,"net":12224.34,"running_balance":1730191.5199999944,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-23T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Investment","type":"Cash Capital Call","unfunded_impact":"Yes","counterparty":"ATH_CF_COOP","gross":-180000.0,"net":-180000.0,"running_balance":1151364.9700000011,"unfunded_remaining":620000.0,"source_doc":"CF_COOP CC 02","source_url":"https://drive.google.com/file/d/1JACKVCSQoNEy9JqtrjKmb-rZ17sfZ2U-/preview"},{"date":"2026-03-23T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-15.0,"running_balance":1151349.9700000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-23T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-201.26,"running_balance":1151148.7100000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-26T00:00:00","month":"2026-03","entity":"5E","bank":"Barclays","category":"Investment","type":"Cash Capital Call","unfunded_impact":"Yes","counterparty":"5E_PSG","gross":-245992.0,"net":-182997.0,"running_balance":2085719.37,"unfunded_remaining":3593756.0,"source_doc":"PSG CC 04","source_url":"https://drive.google.com/file/d/1-5XmTFYwkGo75SQJPwGmbtnC8hj4RkuW/preview"},{"date":"2026-03-26T00:00:00","month":"2026-03","entity":"5E","bank":"Barclays","category":"Investment","type":"Non Cash Distribution Recallable","unfunded_impact":"Yes","counterparty":"5E_PSG","gross":62995.0,"net":0.0,"running_balance":2085719.37,"unfunded_remaining":3656751.0,"source_doc":""},{"date":"2026-03-26T00:00:00","month":"2026-03","entity":"5E","bank":"Barclays","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"Barclays","gross":null,"net":-5.34,"running_balance":2085714.03,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-26T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_M&G","gross":null,"net":5884.4,"running_balance":1736075.9199999943,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-27T00:00:00","month":"2026-03","entity":"5E","bank":"BOS","category":"Investment","type":"Cash Distribution Recallable","unfunded_impact":"Yes","counterparty":"5E_LEX","gross":42674.0,"net":42674.0,"running_balance":292931.53000000026,"unfunded_remaining":2548181.0,"source_doc":"LEX DIST 08","source_url":"https://drive.google.com/file/d/1b11i50D_C2J9NnCMa235IcjKB2qi5F7y/preview"},{"date":"2026-03-27T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Investment","type":"Management Fee","unfunded_impact":"","counterparty":"ATH_TIFF_QRT","gross":null,"net":-10300.0,"running_balance":1140848.7100000011,"unfunded_remaining":null,"source_doc":"TIFF_QRT CC 02","source_url":"https://drive.google.com/file/d/18YBuFjWQLC7GejSgdcGyN2AytrB7Dz1v/preview"},{"date":"2026-03-27T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-15.0,"running_balance":1140833.7100000011,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-27T00:00:00","month":"2026-03","entity":"ATH","bank":"DBS","category":"Operation","type":"Bank Charges","unfunded_impact":"","counterparty":"DBS","gross":null,"net":-41.2,"running_balance":1140792.5100000012,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-27T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Financing","type":"Loan Repayment (Disbursement)","unfunded_impact":"","counterparty":"Kazoku Innovations Ltd","gross":null,"net":-1902.84,"running_balance":1734173.0799999943,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-31T00:00:00","month":"2026-03","entity":"5E","bank":"BOS","category":"Operation","type":"Interest Income - CA","unfunded_impact":"","counterparty":"BOS","gross":null,"net":54.83,"running_balance":292986.3600000003,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-31T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Investment","type":"Distribution (BOS)","unfunded_impact":"","counterparty":"LPE_PIMCO","gross":null,"net":13133.98,"running_balance":1747307.0599999942,"unfunded_remaining":null,"source_doc":""},{"date":"2026-03-31T00:00:00","month":"2026-03","entity":"LPE","bank":"BOS","category":"Operation","type":"Interest Income - CA","unfunded_impact":"","counterparty":"BOS","gross":null,"net":2535.97,"running_balance":1749843.0299999942,"unfunded_remaining":null,"source_doc":""}],"summary":{"2026-01":{"entities":{"5E":{"cash_balance":3236712.3200000003,"unfunded":10115330.06,"committed":17000000.0,"net_change":37196.11,"rollup":{"Cash Capital Call":{"gross":-4931.51,"net":-4931.51,"count":1},"Bank Charges":{"gross":0.0,"net":-5.38,"count":1},"Cash Distribution Recallable":{"gross":42133.0,"net":42133.0,"count":1}}},"ATH":{"cash_balance":1495451.2200000011,"unfunded":4368644.91,"committed":6000000.0,"net_change":292699.26,"rollup":{"Cash Capital Call":{"gross":-200000.0,"net":-200000.0,"count":1},"Interest Charges":{"gross":0.0,"net":-7053.0,"count":1},"Bank Charges":{"gross":0.0,"net":-247.74,"count":3},"Participant Shares":{"gross":0.0,"net":500000.0,"count":1}}},"LPE":{"cash_balance":1588103.459999995,"unfunded":10186401.58,"committed":12000000.0,"net_change":258805.06,"rollup":{"Distribution (BOS)":{"gross":0.0,"net":95564.7,"count":7},"Legal Fee":{"gross":0.0,"net":-1969.5,"count":1},"Cash Capital Call":{"gross":-499786.9,"net":-499786.9,"count":1},"Interest Income":{"gross":0.0,"net":908.0800000000163,"count":1},"Custody Fee":{"gross":0.0,"net":-4269.75,"count":2},"Paid in Capital":{"gross":0.0,"net":666511.0,"count":1},"Interest Income - CA":{"gross":0.0,"net":1847.43,"count":1}}},"ZPP":{"cash_balance":34545.95000000004,"unfunded":1569160.77,"committed":2100000.0,"net_change":-64920.31999999998,"rollup":{"Internal Transfer":{"gross":0.0,"net":500000.0,"count":1},"Cash Capital Call":{"gross":-530839.23,"net":-530839.23,"count":1},"Interest Charges":{"gross":-26346.58,"net":-26346.58,"count":1},"Bank Charges":{"gross":0.0,"net":-30.0,"count":1},"Custody Fee":{"gross":0.0,"net":-7747.56,"count":1},"Interest Income - CA":{"gross":0.0,"net":43.05,"count":1}}}},"totals":{"cash_balance":6354812.949999996,"unfunded":26239537.32,"committed":37100000.0,"net_change":523780.11}},"2026-02":{"entities":{"5E":{"cash_balance":2825211.4600000004,"unfunded":9703883.06,"committed":17000000.0,"net_change":-411500.86,"rollup":{"Cash Distribution Recallable":{"gross":77996.0,"net":77996.0,"count":2},"Bank Charges":{"gross":0.0,"net":-53.86,"count":2},"Cash Capital Call":{"gross":-489443.0,"net":-489443.0,"count":1}}},"ATH":{"cash_balance":1515303.320000001,"unfunded":4388504.8,"committed":6000000.0,"net_change":19852.1,"rollup":{"Cash Distribution Recallable":{"gross":19859.89,"net":19859.89,"count":1},"Bank Charges":{"gross":0.0,"net":-7.79,"count":1}}},"LPE":{"cash_balance":1682516.1899999946,"unfunded":10186401.58,"committed":12000000.0,"net_change":94412.72999999998,"rollup":{"Bank Charges":{"gross":0.0,"net":1.42,"count":1},"Distribution (BOS)":{"gross":0.0,"net":95322.29,"count":7},"Loan Repayment (Disbursement)":{"gross":0.0,"net":-245.0,"count":1},"Professional Fee":{"gross":0.0,"net":-2837.07,"count":1},"Interest Income - CA":{"gross":0.0,"net":2171.09,"count":1}}},"ZPP":{"cash_balance":29132.69000000004,"unfunded":1569160.77,"committed":2100000.0,"net_change":-5413.26,"rollup":{"Legal Fee":{"gross":0.0,"net":-5413.26,"count":1}}}},"totals":{"cash_balance":6052163.659999996,"unfunded":25847950.209999997,"committed":37100000.0,"net_change":-302649.29000000004}},"2026-03":{"entities":{"5E":{"cash_balance":2874775.1100000003,"unfunded":9698394.06,"committed":17000000.0,"net_change":49563.649999999994,"rollup":{"Interest Income - CA":{"gross":0.0,"net":23303.99,"count":2},"Non Cash Capital Call":{"gross":-91345.0,"net":0.0,"count":1},"Cash Distribution Recallable":{"gross":268853.0,"net":177508.0,"count":2},"Cash Distribution Non Recallable":{"gross":47225.0,"net":47225.0,"count":1},"Interest Charges":{"gross":0.0,"net":-15471.0,"count":1},"Cash Capital Call":{"gross":-245992.0,"net":-182997.0,"count":1},"Non Cash Distribution Recallable":{"gross":62995.0,"net":0.0,"count":1},"Bank Charges":{"gross":0.0,"net":-5.34,"count":1}}},"ATH":{"cash_balance":1140792.5100000012,"unfunded":3958504.8,"committed":6000000.0,"net_change":-374510.81,"rollup":{"Legal Fee":{"gross":0.0,"net":-6451.2,"count":1},"Bank Charges":{"gross":0.0,"net":-535.5600000000001,"count":8},"Cash Capital Call":{"gross":-430000.0,"net":-430000.0,"count":2},"Participant Shares":{"gross":0.0,"net":72775.95,"count":2},"Management Fee":{"gross":0.0,"net":-10300.0,"count":1}}},"LPE":{"cash_balance":1749843.0299999942,"unfunded":10168401.58,"committed":12000000.0,"net_change":67326.84,"rollup":{"Distribution (BOS)":{"gross":0.0,"net":87392.04,"count":7},"Loan Repayment (Disbursement)":{"gross":0.0,"net":-3577.84,"count":2},"Membership Fee":{"gross":0.0,"net":-1023.33,"count":1},"Cash Capital Call":{"gross":-18000.0,"net":-18000.0,"count":1},"Interest Income - CA":{"gross":0.0,"net":2535.97,"count":1}}},"ZPP":{"cash_balance":38422.379999999604,"unfunded":1569160.77,"committed":2100000.0,"net_change":9289.689999999566,"rollup":{"Cash Distribution Non Recallable":{"gross":9289.689999999566,"net":9289.689999999566,"count":1}}}},"totals":{"cash_balance":5803833.029999996,"unfunded":25394461.209999997,"committed":37100000.0,"net_change":-248330.63000000047}}},"tx_types_investment":["Cash Capital Call","Non Cash Capital Call","Cash Distribution Recallable","Cash Distribution Non Recallable","Non Cash Distribution Recallable","Non Cash Distribution Non Recallable","Distribution (BOS)","Interest Income","Interest Charges","Custody Fee","Participant Shares","Management Fee"],"tx_types_operation":["Bank Charges","Interest Income - CA","Legal Fee","Professional Fee","Internal Transfer"],"tx_types_financing":["Paid in Capital","Loan Repayment (Disbursement)"]};
+
+// Month label formatter (2026-01 -> JANUARY 2026)
+const MONTH_NAMES = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+function monthLabel(m) {
+  const [y, mo] = m.split('-');
+  return `${MONTH_NAMES[parseInt(mo)-1]} ${y}`;
+}
+function fmtUSDFull(v, decimals=0) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  return v.toLocaleString('en-US', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+}
+function fmtCompact(v) {
+  if (v === null || v === undefined || isNaN(v) || v === 0) return '—';
+  const abs = Math.abs(v);
+  const sign = v < 0 ? '-' : '';
+  if (abs >= 1e9) return sign + (abs/1e9).toFixed(2) + 'B';
+  if (abs >= 1e6) return sign + (abs/1e6).toFixed(2) + 'M';
+  if (abs >= 1e3) return sign + (abs/1e3).toFixed(1) + 'K';
+  return sign + abs.toFixed(0);
+}
+function fmtK(v) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  const sign = v < 0 ? '-' : '';
+  return sign + Math.round(Math.abs(v) / 1000).toLocaleString('en-US') + 'K';
+}
+function fmtCompactSigned(v) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  if (v === 0) return '0';
+  const c = fmtCompact(Math.abs(v));
+  return (v >= 0 ? '+' : '-') + c;
+}
+function classNeg(v) {
+  if (v === null || v === undefined || isNaN(v)) return '';
+  return v < 0 ? 'neg' : (v > 0 ? 'pos' : '');
+}
+
+const ENTITY_COLORS = {
+  '5E': '#1a2b4a',
+  'ATH': '#c9a961',
+  'LPE': '#2d6e4e',
+  'ZPP': '#4a8a8a'
+};
+
+function pillClass(e) { return 'entity-pill e-' + e.toLowerCase(); }
+
+function toggleTx(e) {
+  const body = document.getElementById(`${e}-tx-body`);
+  const chevron = document.getElementById(`${e}-tx-chevron`);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chevron.classList.toggle('open', !isOpen);
+}
+
+// ==============================
+// Initialize month selector
+// ==============================
+const monthSelect = document.getElementById('monthSelect');
+PAYLOAD.months.forEach(m => {
+  const opt = document.createElement('option');
+  opt.value = m;
+  opt.textContent = monthLabel(m);
+  monthSelect.appendChild(opt);
+});
+monthSelect.value = PAYLOAD.months[PAYLOAD.months.length - 1]; // default to latest month
+
+// Track current month + view
+let currentMonth = monthSelect.value;
+let currentView = 'summary';
+
+monthSelect.addEventListener('change', e => {
+  currentMonth = e.target.value;
+  renderAll();
+});
+
+document.querySelectorAll('.entity-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.entity-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentView = btn.dataset.view;
+    showView(currentView);
+  });
+});
+
+function showView(v) {
+  document.querySelectorAll('.entity-page').forEach(el => el.classList.remove('active'));
+  if (v === 'summary') document.getElementById('page-summary').classList.add('active');
+  else document.getElementById('page-' + v).classList.add('active');
+}
+
+// ==============================
+// Render summary
+// ==============================
+let donutChart = null, cashTrendChart = null, cashflowChart = null;
+
+function renderSummary(month) {
+  const m = PAYLOAD.summary[month];
+  // KPIs
+  document.getElementById('kpi-cash').innerHTML = '<span class="currency">$</span>' + fmtCompact(m.totals.cash_balance);
+  document.getElementById('kpi-unfunded').innerHTML = '<span class="currency">$</span>' + fmtCompact(m.totals.unfunded);
+  document.getElementById('kpi-committed').innerHTML = '<span class="currency">$</span>' + fmtCompact(m.totals.committed);
+  const netVal = m.totals.net_change;
+  const netEl = document.getElementById('kpi-net');
+  netEl.innerHTML = (netVal >= 0 ? '+' : '-') + '<span class="currency">$</span>' + fmtCompact(Math.abs(netVal));
+  netEl.className = 'kpi-value ' + (netVal >= 0 ? 'pos' : 'neg');
+  document.getElementById('kpi-net-sub').textContent = monthLabel(month).toLowerCase();
+  document.getElementById('summary-rollup-tag').textContent = monthLabel(month);
+  document.getElementById('summary-cashflow-tag').textContent = monthLabel(month);
+  // Funded ratio = (committed - unfunded) / committed
+  const ratio = m.totals.committed > 0 ? ((m.totals.committed - m.totals.unfunded) / m.totals.committed) * 100 : 0;
+  document.getElementById('kpi-funded').textContent = ratio.toFixed(1) + '%';
+
+  // Cash sub: list banks count
+  const banks = new Set();
+  Object.values(PAYLOAD.entity_banks).forEach(arr => arr.forEach(b => banks.add(b)));
+  document.getElementById('kpi-cash-sub').textContent = `Across ${banks.size} banks: ${[...banks].join(' · ')}`;
+
+  // Entity summary table
+  const tbody = document.querySelector('#entity-summary-tbl tbody');
+  tbody.innerHTML = '';
+  PAYLOAD.entities.forEach(e => {
+    const ed = m.entities[e];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="${pillClass(e)}">${e}</span></td>
+      <td class="num">${fmtUSDFull(ed.cash_balance, 0)}</td>
+      <td class="num">${fmtUSDFull(ed.committed, 0)}</td>
+      <td class="num">${fmtUSDFull(ed.unfunded, 0)}</td>
+      <td class="num ${classNeg(ed.net_change)}">${(ed.net_change>=0?'+':'')}${fmtUSDFull(ed.net_change, 0)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  // Total row
+  const trTotal = document.createElement('tr');
+  trTotal.style.fontWeight = '700';
+  trTotal.style.background = 'var(--bg-cream)';
+  trTotal.innerHTML = `
+    <td>Total</td>
+    <td class="num">${fmtUSDFull(m.totals.cash_balance, 0)}</td>
+    <td class="num">${fmtUSDFull(m.totals.committed, 0)}</td>
+    <td class="num">${fmtUSDFull(m.totals.unfunded, 0)}</td>
+    <td class="num ${classNeg(m.totals.net_change)}">${(m.totals.net_change>=0?'+':'')}${fmtUSDFull(m.totals.net_change, 0)}</td>
+  `;
+  tbody.appendChild(trTotal);
+
+  // Donut chart
+  const labels = PAYLOAD.entities;
+  const dataVals = labels.map(e => Math.max(0, m.entities[e].cash_balance));
+  if (donutChart) donutChart.destroy();
+  const ctx = document.getElementById('donut').getContext('2d');
+  donutChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: dataVals,
+        backgroundColor: labels.map(e => ENTITY_COLORS[e]),
+        borderColor: '#fff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      cutout: '62%',
+      plugins: { legend: { display: false } },
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+  const totalCash = dataVals.reduce((a,b)=>a+b,0);
+  const lg = document.getElementById('donut-legend');
+  lg.innerHTML = labels.map((e,i) => {
+    const pct = totalCash > 0 ? ((dataVals[i]/totalCash)*100).toFixed(1) : '0.0';
+    return `<div class="lg-row"><span class="lab"><span class="dot" style="background:${ENTITY_COLORS[e]}"></span>${e}</span><span>${pct}% &middot; $${fmtCompact(dataVals[i])}</span></div>`;
+  }).join('');
+
+  // Roll-up table — pivoted: rows are types, columns are entities
+  buildRollupTable(month);
+
+  // Cash trend across months (line)
+  if (cashTrendChart) cashTrendChart.destroy();
+  const months = PAYLOAD.months;
+  const trendDatasets = PAYLOAD.entities.map(e => ({
+    label: e,
+    data: months.map(mm => PAYLOAD.summary[mm].entities[e].cash_balance),
+    borderColor: ENTITY_COLORS[e],
+    backgroundColor: ENTITY_COLORS[e] + '20',
+    borderWidth: 2,
+    tension: 0.3,
+    pointRadius: 4,
+    pointHoverRadius: 6
+  }));
+  const ctx2 = document.getElementById('cashTrend').getContext('2d');
+  cashTrendChart = new Chart(ctx2, {
+    type: 'line',
+    data: { labels: months.map(monthLabel), datasets: trendDatasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11, family: 'Montserrat' } } } },
+      scales: {
+        y: { ticks: { callback: v => '$' + fmtCompact(v), font: { family: 'Montserrat', size: 11 } } },
+        x: { ticks: { font: { family: 'Montserrat', size: 11 } } }
+      }
+    }
+  });
+
+  // Capital calls vs distributions chart for current month
+  if (cashflowChart) cashflowChart.destroy();
+  const callTypes = ['Cash Capital Call','Non Cash Capital Call'];
+  const distTypes = ['Cash Distribution Recallable','Cash Distribution Non Recallable','Non Cash Distribution Recallable','Non Cash Distribution Non Recallable'];
+  const calls = PAYLOAD.entities.map(e => {
+    const ru = m.entities[e].rollup;
+    return callTypes.reduce((s,t) => s + (ru[t]?.net||0), 0);
+  });
+  const dists = PAYLOAD.entities.map(e => {
+    const ru = m.entities[e].rollup;
+    return distTypes.reduce((s,t) => s + (ru[t]?.net||0), 0);
+  });
+  const ctx3 = document.getElementById('cashflowChart').getContext('2d');
+  cashflowChart = new Chart(ctx3, {
+    type: 'bar',
+    data: {
+      labels: PAYLOAD.entities,
+      datasets: [
+        { label: 'Capital Calls', data: calls, backgroundColor: '#b94a3a' },
+        { label: 'Distributions', data: dists, backgroundColor: '#2d6e4e' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11, family: 'Montserrat' } } } },
+      scales: {
+        y: { ticks: { callback: v => '$' + fmtCompact(v), font: { family: 'Montserrat', size: 11 } } },
+        x: { ticks: { font: { family: 'Montserrat', size: 11 } } }
+      }
+    }
+  });
+}
+
+function buildRollupTable(month) {
+  const m = PAYLOAD.summary[month];
+  const wrap = document.getElementById('rollup-tbl-wrap');
+  const allTypes = [
+    {cat: 'INVESTMENT', items: PAYLOAD.tx_types_investment},
+    {cat: 'OPERATION', items: PAYLOAD.tx_types_operation},
+    {cat: 'FINANCING', items: PAYLOAD.tx_types_financing}
+  ];
+  let html = '<table><thead><tr><th>Transaction Type</th>';
+  PAYLOAD.entities.forEach(e => html += `<th class="num">${e}</th>`);
+  html += '<th class="num">Total</th></tr></thead><tbody>';
+  allTypes.forEach(grp => {
+    // group header
+    html += `<tr><td colspan="${PAYLOAD.entities.length+2}" style="background: var(--bg-cream); padding: 8px 16px;"><span class="cat-tag tx-cat-${grp.cat.toLowerCase()}">${grp.cat}</span></td></tr>`;
+    grp.items.forEach(t => {
+      // Check if any entity has this type in current month
+      const vals = PAYLOAD.entities.map(e => m.entities[e].rollup[t]?.net || 0);
+      const total = vals.reduce((a,b)=>a+b,0);
+      if (vals.every(v=>v===0)) return; // skip if no data
+      html += `<tr><td>${t}</td>`;
+      vals.forEach(v => {
+        if (v === 0) html += '<td class="num" style="color:var(--text-light);">—</td>';
+        else html += `<td class="num ${classNeg(v)}">${(v>=0?'+':'')}${fmtUSDFull(v,0)}</td>`;
+      });
+      html += `<td class="num ${classNeg(total)}">${(total>=0?'+':'')}${fmtUSDFull(total,0)}</td></tr>`;
+    });
+  });
+  // Net total row
+  const grand = PAYLOAD.entities.map(e => m.entities[e].net_change);
+  const grandTotal = grand.reduce((a,b)=>a+b,0);
+  html += `<tr style="font-weight:700; background: var(--bg-cream-dark);"><td>Net Change</td>`;
+  grand.forEach(v => html += `<td class="num ${classNeg(v)}">${(v>=0?'+':'')}${fmtUSDFull(v,0)}</td>`);
+  html += `<td class="num ${classNeg(grandTotal)}">${(grandTotal>=0?'+':'')}${fmtUSDFull(grandTotal,0)}</td></tr>`;
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+// ==============================
+// Build entity pages
+// ==============================
+function buildEntityPages() {
+  const container = document.getElementById('entity-pages-container');
+  PAYLOAD.entities.forEach(e => {
+    const page = document.createElement('section');
+    page.id = 'page-' + e;
+    page.className = 'entity-page';
+
+    page.innerHTML = `
+      <div class="entity-header">
+        <div>
+          <h2><span class="${pillClass(e)}" style="vertical-align: middle; margin-right: 8px; padding: 6px 14px; font-size: 13px;">${e}</span> Entity Detail</h2>
+          <div class="meta" style="margin-top: 6px;">Banks: <span id="${e}-banks"></span></div>
+        </div>
+        <div class="meta" id="${e}-period"></div>
+      </div>
+
+      <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="kpi-card kpi-navy"><div class="kpi-label">Cash Balance</div><div class="kpi-value" id="${e}-cash"><span class="currency">$</span>—</div><div class="kpi-sub">at month-end</div></div>
+        <div class="kpi-card kpi-green"><div class="kpi-label">Committed</div><div class="kpi-value" id="${e}-committed"><span class="currency">$</span>—</div><div class="kpi-sub">total commitments</div></div>
+        <div class="kpi-card"><div class="kpi-label">Unfunded</div><div class="kpi-value" id="${e}-unfunded"><span class="currency">$</span>—</div><div class="kpi-sub">remaining commitments</div></div>
+        <div class="kpi-card kpi-teal"><div class="kpi-label">Net Cash (Mo)</div><div class="kpi-value" id="${e}-net"><span class="currency">$</span>—</div><div class="kpi-sub" id="${e}-net-sub">—</div></div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title-left">Cash Balance by Bank <span class="section-tag">Month-End</span></h3>
+        <div id="${e}-bank-tbl"></div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title-left">Funds Commitments and Unfunded <span class="section-tag" id="${e}-cp-tag">As of Selected Month</span></h3>
+        <div id="${e}-cp-tbl"></div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title-left">Summary Transactions <span class="section-tag" id="${e}-rollup-tag">Selected Month</span></h3>
+        <div id="${e}-rollup"></div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title-left section-toggle" onclick="toggleTx('${e}')">
+          Detailed Transactions
+          <span style="display:flex;align-items:center;gap:8px;">
+            <span class="section-tag" id="${e}-tx-tag" style="float:none;margin-top:0;">Selected Month</span>
+            <i class="toggle-chevron" id="${e}-tx-chevron">▼</i>
+          </span>
+        </h3>
+        <div class="collapsible-body" id="${e}-tx-body">
+          <div id="${e}-tx"></div>
+        </div>
+      </div>
+    `;
+    container.appendChild(page);
+  });
+}
+
+function renderEntityPage(e, month) {
+  const m = PAYLOAD.summary[month];
+  const ed = m.entities[e];
+
+  document.getElementById(`${e}-banks`).textContent = (PAYLOAD.entity_banks[e]||[]).join(' · ');
+  document.getElementById(`${e}-period`).textContent = 'Period: ' + monthLabel(month);
+
+  document.getElementById(`${e}-cash`).innerHTML = '<span class="currency">$</span>' + fmtCompact(ed.cash_balance);
+  document.getElementById(`${e}-unfunded`).innerHTML = '<span class="currency">$</span>' + fmtCompact(ed.unfunded);
+  document.getElementById(`${e}-committed`).innerHTML = '<span class="currency">$</span>' + fmtCompact(ed.committed);
+  const netEl = document.getElementById(`${e}-net`);
+  netEl.innerHTML = (ed.net_change>=0?'+':'-') + '<span class="currency">$</span>' + fmtCompact(Math.abs(ed.net_change));
+  netEl.className = 'kpi-value ' + (ed.net_change>=0?'pos':'neg');
+  document.getElementById(`${e}-net-sub`).textContent = monthLabel(month).toLowerCase();
+  document.getElementById(`${e}-cp-tag`).textContent = 'As of ' + monthLabel(month);
+  document.getElementById(`${e}-rollup-tag`).textContent = monthLabel(month);
+  document.getElementById(`${e}-tx-tag`).textContent = monthLabel(month);
+
+  // Bank table — monthly balances Jan-26 to Dec-26
+  const banks = PAYLOAD.entity_banks[e] || [];
+  const allMonths12 = Array.from({length: 12}, (_, i) => `2026-${String(i+1).padStart(2,'0')}`);
+  const SHORT_MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Helper: get month-end balance for a bank, carrying forward if no transactions that month
+  function bankBalanceAsOf(entity, bank, upToMonth) {
+    const allTxs = PAYLOAD.transactions.filter(t => t.entity===entity && t.bank===bank && t.month<=upToMonth && t.running_balance!==null);
+    return allTxs.length > 0 ? allTxs[allTxs.length-1].running_balance : null;
+  }
+
+  let bankHtml = '<div style="overflow-x:auto"><table style="font-size:11px;min-width:600px"><thead><tr><th>Bank</th>';
+  allMonths12.forEach((m, i) => {
+    const sel = m === month;
+    bankHtml += `<th class="num" style="${sel ? 'font-weight:700' : 'color:var(--text-muted)'}">${SHORT_MON[i]}-26</th>`;
+  });
+  bankHtml += '</tr></thead><tbody>';
+
+  const lastDataMonth = PAYLOAD.months[PAYLOAD.months.length - 1];
+  banks.forEach(b => {
+    bankHtml += `<tr><td><span class="bank-tag">${b}</span></td>`;
+    allMonths12.forEach(m => {
+      const sel = m === month;
+      if (m > lastDataMonth) {
+        bankHtml += `<td class="num" style="color:var(--text-muted)">—</td>`;
+        return;
+      }
+      const val = bankBalanceAsOf(e, b, m);
+      bankHtml += `<td class="num" style="${sel ? 'font-weight:700' : 'color:var(--text-muted)'}">${val !== null ? fmtK(val) : '—'}</td>`;
+    });
+    bankHtml += '</tr>';
+  });
+
+  // Total row
+  bankHtml += `<tr style="font-weight:700;background:var(--bg-cream)"><td>Total</td>`;
+  allMonths12.forEach(m => {
+    if (m > lastDataMonth) {
+      bankHtml += `<td class="num" style="color:var(--text-muted);font-weight:400">—</td>`;
+      return;
+    }
+    const mData = PAYLOAD.summary[m];
+    const val = mData ? (mData.entities[e] ? mData.entities[e].cash_balance : null) : null;
+    const sel = m === month;
+    bankHtml += `<td class="num" style="${sel ? '' : 'color:var(--text-muted);font-weight:400'}">${val !== null && val !== undefined ? fmtK(val) : '—'}</td>`;
+  });
+  bankHtml += '</tr></tbody></table></div>';
+  document.getElementById(`${e}-bank-tbl`).innerHTML = bankHtml;
+
+  // Counterparty commitments (uses canonical commitment per counterparty + Summary-tab unfunded)
+  const cpEntries = PAYLOAD.counterparties.filter(c => c.entity === e);
+  const unfMap = (PAYLOAD.unfunded_detail[month] && PAYLOAD.unfunded_detail[month][e]) || {};
+  let cpHtml = '<table><thead><tr><th>Funds</th><th class="num">Committed</th><th class="num">Called (Distribution Recallable)</th><th class="num">Unfunded</th></tr></thead><tbody>';
+  cpEntries.sort((a,b)=>b.committed-a.committed).forEach(info => {
+    const cp = info.counterparty;
+    const unfunded = unfMap[cp] !== undefined ? unfMap[cp] : info.committed;
+    const drawn = info.committed - unfunded;
+    cpHtml += `<tr><td><strong>${cp}</strong></td><td class="num">${fmtUSDFull(info.committed,0)}</td><td class="num ${classNeg(drawn)}">${fmtUSDFull(drawn,0)}</td><td class="num">${fmtUSDFull(unfunded,0)}</td></tr>`;
+  });
+  const totalCommitted = ed.committed;
+  const totalUnfunded = ed.unfunded;
+  const totalDrawn = totalCommitted - totalUnfunded;
+  cpHtml += `<tr style="font-weight:700;background:var(--bg-cream)"><td>Total</td><td class="num">${fmtUSDFull(totalCommitted,0)}</td><td class="num ${classNeg(totalDrawn)}">${fmtUSDFull(totalDrawn,0)}</td><td class="num">${fmtUSDFull(totalUnfunded,0)}</td></tr>`;
+  cpHtml += '</tbody></table>';
+  document.getElementById(`${e}-cp-tbl`).innerHTML = cpHtml;
+
+  // Roll-up by category for this entity
+  const allTypes = [
+    {cat: 'INVESTMENT', items: PAYLOAD.tx_types_investment},
+    {cat: 'OPERATION', items: PAYLOAD.tx_types_operation},
+    {cat: 'FINANCING', items: PAYLOAD.tx_types_financing}
+  ];
+  let rollupHtml = '<table><thead><tr><th>Type</th><th class="num">Count</th><th class="num">Gross (USD)</th><th class="num">Net (USD)</th></tr></thead><tbody>';
+  let anyData = false;
+  allTypes.forEach(grp => {
+    let groupHasData = false;
+    let groupRows = '';
+    grp.items.forEach(t => {
+      const r = ed.rollup[t];
+      if (!r || r.count === 0) return;
+      groupHasData = true;
+      anyData = true;
+      groupRows += `<tr><td>${t}</td><td class="num">${r.count}</td><td class="num">${r.gross===0?'—':fmtUSDFull(r.gross,0)}</td><td class="num ${classNeg(r.net)}">${(r.net>=0?'+':'')}${fmtUSDFull(r.net,0)}</td></tr>`;
+    });
+    if (groupHasData) {
+      rollupHtml += `<tr><td colspan="4" style="background:var(--bg-cream); padding: 8px 16px;"><span class="cat-tag tx-cat-${grp.cat.toLowerCase()}">${grp.cat}</span></td></tr>` + groupRows;
+    }
+  });
+  if (!anyData) rollupHtml += '<tr><td colspan="4" class="no-data">No transactions in this period</td></tr>';
+  // Total
+  if (anyData) {
+    rollupHtml += `<tr style="font-weight:700;background:var(--bg-cream-dark);"><td>Net Change</td><td class="num">—</td><td class="num">—</td><td class="num ${classNeg(ed.net_change)}">${(ed.net_change>=0?'+':'')}${fmtUSDFull(ed.net_change,0)}</td></tr>`;
+  }
+  rollupHtml += '</tbody></table>';
+  document.getElementById(`${e}-rollup`).innerHTML = rollupHtml;
+
+  // Detailed transactions — grouped & sorted by bank
+  const txs = PAYLOAD.transactions.filter(t => t.entity===e && t.month===month);
+  let txHtml = '';
+  if (txs.length === 0) {
+    txHtml = '<div class="no-data">No transactions in this period</div>';
+  } else {
+    const entityBanks = PAYLOAD.entity_banks[e] || [];
+    // Group by bank preserving entity bank order
+    const txsByBank = {};
+    entityBanks.forEach(b => { txsByBank[b] = []; });
+    txs.forEach(t => {
+      if (!txsByBank[t.bank]) txsByBank[t.bank] = [];
+      txsByBank[t.bank].push(t);
+    });
+    // Sort each group by date
+    entityBanks.forEach(b => {
+      txsByBank[b].sort((a, b) => a.date.localeCompare(b.date));
+    });
+
+    txHtml = '<table><thead><tr><th>Date</th><th>Category</th><th>Type</th><th>Counterparty</th><th class="num">Gross (USD)</th><th class="num">Net (USD)</th><th class="num">Running Cash</th><th class="num">Unfunded Rem.</th><th>Source</th></tr></thead><tbody>';
+
+    entityBanks.forEach(b => {
+      const bankTxs = txsByBank[b] || [];
+
+      // Carry forward balance from previous months if no transactions this month
+      const carryFwd = bankTxs.length === 0 ? bankBalanceAsOf(e, b, month) : null;
+      if (bankTxs.length === 0 && carryFwd === null) return; // bank never had activity
+
+      // Bank group header row
+      txHtml += `<tr style="background:var(--navy);"><td colspan="9" style="font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:rgba(245,241,232,0.85);padding:7px 12px;">${b}</td></tr>`;
+
+      if (bankTxs.length === 0) {
+        // No transactions this month — show a quiet note row
+        txHtml += `<tr><td colspan="9" style="font-size:11px;color:var(--text-muted);font-style:italic;padding:8px 12px;">No transactions this period — balance carried forward</td></tr>`;
+      } else {
+        bankTxs.forEach(t => {
+          const dt = t.date.substr(0,10);
+          const cat = (t.category || '').toLowerCase();
+          txHtml += `<tr>
+            <td>${dt}</td>
+            <td><span class="cat-tag tx-cat-${cat}">${t.category||''}</span></td>
+            <td>${t.type||''}</td>
+            <td><strong>${t.counterparty||'—'}</strong></td>
+            <td class="num">${t.gross===null?'—':fmtUSDFull(t.gross,2)}</td>
+            <td class="num ${classNeg(t.net)}">${t.net===null?'—':((t.net>=0?'+':'')+fmtUSDFull(t.net,2))}</td>
+            <td class="num">${t.running_balance===null?'—':fmtUSDFull(t.running_balance,2)}</td>
+            <td class="num">${t.unfunded_remaining===null?'—':fmtUSDFull(t.unfunded_remaining,2)}</td>
+            <td style="font-size:11px;color:var(--text-muted);">${t.source_url ? `<a href="${t.source_url}" target="_blank" style="color:var(--accent);text-decoration:underline;font-weight:500;" title="Open source document">${t.source_doc||'View'}</a>` : (t.source_doc||'')}</td>
+          </tr>`;
+        });
+      }
+
+      // Month-end balance row for this bank (actual or carried forward)
+      const lastBal = bankTxs.length > 0 ? bankTxs[bankTxs.length-1].running_balance : carryFwd;
+      txHtml += `<tr style="background:#e8e2d4;border-top:2px solid var(--border-light);">
+        <td colspan="6" style="font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:600;">Month-End Balance &middot; ${b}${carryFwd!==null?' (carried forward)':''}</td>
+        <td class="num" style="font-weight:700;">${lastBal!==null?fmtUSDFull(lastBal,2):'—'}</td>
+        <td></td><td></td>
+      </tr>`;
+    });
+
+    txHtml += '</tbody></table>';
+  }
+  document.getElementById(`${e}-tx`).innerHTML = txHtml;
+}
+
+function renderAll() {
+  renderSummary(currentMonth);
+  PAYLOAD.entities.forEach(e => renderEntityPage(e, currentMonth));
+}
+
+buildEntityPages();
+renderAll();
+</script>
+</body>
+</html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                 

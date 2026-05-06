@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capital Activity — Access</title>
+
+<!-- Anti-crawl -->
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg-navy:        #0a1628;
+    --bg-navy-dark:   #06101e;
+    --gold:           #c9a961;
+    --gold-deep:      #a8893d;
+    --gold-lt:        #d8be7e;
+    --gold-dim:       rgba(201,169,97,0.12);
+    --cream:          #f5f1e8;
+    --cream-dk:       #ede7d8;
+    --navy:           #1a2b4a;
+    --border:         rgba(201,169,97,0.2);
+    --border-lt:      rgba(201,169,97,0.1);
+    --green:          #2d6e4e;
+    --red:            #b94a3a;
+    --shadow-lg:      0 16px 64px rgba(6,16,30,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    background: var(--bg-navy);
+    color: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.5;
+  }
+
+  /* Background grid lines */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(201,169,97,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,169,97,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .pin-wrapper {
+    position: relative; z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    padding: 0 24px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(24px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* Logo / Brand */
+  .brand {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .brand-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 30px;
+    color: var(--gold-lt);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .brand-sub {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    color: rgba(245,241,232,0.4);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin-top: 10px;
+  }
+  .brand-rule {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin: 16px auto 0;
+    opacity: 0.5;
+  }
+
+  /* Card */
+  .pin-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,169,97,0.18);
+    border-radius: 4px;
+    padding: 36px 36px 32px;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(12px);
+  }
+
+  .card-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(245,241,232,0.4);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  /* PIN dots display */
+  .pin-dots {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,169,97,0.35);
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .dot.filled {
+    background: var(--gold);
+    border-color: var(--gold);
+    box-shadow: 0 0 10px rgba(201,169,97,0.5);
+  }
+  .dot.error {
+    background: var(--red);
+    border-color: var(--red);
+    box-shadow: 0 0 10px rgba(185,74,58,0.5);
+    animation: shake 0.4s ease;
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-5px); }
+    40%      { transform: translateX(5px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+  }
+
+  /* Numpad */
+  .numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .key {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,169,97,0.12);
+    border-radius: 3px;
+    padding: 16px 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: rgba(245,241,232,0.85);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .key:hover {
+    background: rgba(201,169,97,0.1);
+    border-color: rgba(201,169,97,0.3);
+    color: var(--gold-lt);
+  }
+  .key:active {
+    transform: scale(0.95);
+    background: rgba(201,169,97,0.18);
+  }
+  .key.key-del {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: rgba(245,241,232,0.4);
+  }
+  .key.key-del:hover { color: var(--red); border-color: rgba(185,74,58,0.3); }
+  .key.key-enter {
+    background: rgba(201,169,97,0.12);
+    border-color: rgba(201,169,97,0.3);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .key.key-enter:hover {
+    background: var(--gold);
+    color: var(--bg-navy);
+    border-color: var(--gold);
+  }
+  .key.key-enter:disabled,
+  .key.key-enter.loading {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Error message */
+  .error-msg {
+    text-align: center;
+    margin-top: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--red);
+    letter-spacing: 0.12em;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .error-msg.visible { opacity: 1; }
+
+  /* Footer */
+  .pin-footer {
+    text-align: center;
+    margin-top: 32px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 8px;
+    font-weight: 500;
+    color: rgba(245,241,232,0.18);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  /* Hidden form */
+  #pinForm { display: none; }
+</style>
+</head>
+<body>
+
+<div class="pin-wrapper">
+
+  <!-- Brand -->
+  <div class="brand">
+    <div class="brand-name">Capital Activity</div>
+    <div class="brand-rule"></div>
+    <div class="brand-sub">Family Office &middot; Capital Activity Report</div>
+  </div>
+
+  <!-- PIN Card -->
+  <div class="pin-card">
+    <div class="card-label">Enter Access PIN</div>
+
+    <!-- PIN dot indicators -->
+    <div class="pin-dots" id="pinDots">
+      <div class="dot" id="d0"></div>
+      <div class="dot" id="d1"></div>
+      <div class="dot" id="d2"></div>
+      <div class="dot" id="d3"></div>
+      <div class="dot" id="d4"></div>
+      <div class="dot" id="d5"></div>
+    </div>
+
+    <!-- Numpad -->
+    <div class="numpad">
+      <div class="key" onclick="press('1')">1</div>
+      <div class="key" onclick="press('2')">2</div>
+      <div class="key" onclick="press('3')">3</div>
+      <div class="key" onclick="press('4')">4</div>
+      <div class="key" onclick="press('5')">5</div>
+      <div class="key" onclick="press('6')">6</div>
+      <div class="key" onclick="press('7')">7</div>
+      <div class="key" onclick="press('8')">8</div>
+      <div class="key" onclick="press('9')">9</div>
+      <div class="key key-del" onclick="del()">⌫</div>
+      <div class="key" onclick="press('0')">0</div>
+      <div class="key key-enter" id="enterBtn" onclick="submit()">Enter</div>
+    </div>
+
+    <div class="error-msg" id="errorMsg">Incorrect PIN. Please try again.</div>
+  </div>
+
+  <div class="pin-footer">Restricted Access &middot; Capital Activity v1.0</div>
+</div>
+
+<!-- Hidden form for server POST -->
+<form id="pinForm" method="POST" action="/pin">
+  <input type="hidden" name="pin" id="pinInput">
+</form>
+
+<script>
+  let entered = '';
+  const MAX = 6;
+
+  // Check if arrived here due to wrong PIN or session timeout
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('error') === '1') {
+    showError();
+  }
+  if (params.get('timeout') === '1') {
+    const el = document.getElementById('errorMsg');
+    el.textContent = 'Session berakhir karena tidak ada aktivitas.';
+    el.classList.add('visible');
+  }
+
+  function press(digit) {
+    if (entered.length >= MAX) return;
+    entered += digit;
+    updateDots();
+    clearError();
+    // Auto-submit when all digits entered
+    if (entered.length === MAX) {
+      setTimeout(submit, 180);
+    }
+  }
+
+  function del() {
+    if (entered.length === 0) return;
+    entered = entered.slice(0, -1);
+    updateDots();
+    clearError();
+  }
+
+  function submit() {
+    if (entered.length === 0) return;
+    const btn = document.getElementById('enterBtn');
+    btn.classList.add('loading');
+    btn.textContent = '...';
+    document.getElementById('pinInput').value = entered;
+    document.getElementById('pinForm').submit();
+  }
+
+  function updateDots() {
+    for (let i = 0; i < MAX; i++) {
+      const dot = document.getElementById('d' + i);
+      dot.classList.toggle('filled', i < entered.length);
+      dot.classList.remove('error');
+    }
+  }
+
+  function showError() {
+    for (let i = 0; i < MAX; i++) {
+      const dot = document.getElementById('d' + i);
+      dot.classList.remove('filled');
+      dot.classList.add('error');
+    }
+    document.getElementById('errorMsg').classList.add('visible');
+    entered = '';
+    // Remove error dots after animation
+    setTimeout(() => {
+      for (let i = 0; i < MAX; i++) {
+        document.getElementById('d' + i).classList.remove('error');
+      }
+    }, 600);
+  }
+
+  function clearError() {
+    document.getElementById('errorMsg').classList.remove('visible');
+  }
+
+  // Keyboard support
+  document.addEventListener('keydown', (e) => {
+    if (e.key >= '0' && e.key <= '9') press(e.key);
+    else if (e.key === 'Backspace') del();
+    else if (e.key === 'Enter') submit();
+  });
+</script>
+</body>
+</html>
