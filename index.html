@@ -537,7 +537,7 @@ footer {
     <span style="color: rgba(245,241,232,0.65); font-size: 10px; letter-spacing: 2px;">AS OF</span>
     <select id="monthSelect" class="month-select"></select>
     <span class="live-dot"></span>
-    <button class="export-btn" onclick="(function(){ const sel = document.getElementById('monthSelect'); const dt = new Date(sel.value + '-01'); const label = dt.toLocaleString('en-US',{month:'long'}) + ' ' + dt.getFullYear(); window.open('Capital Activity Report - ' + label + '.pdf'); })()">Print / PDF</button>
+    <button class="export-btn" onclick="(function(){ const sel = document.getElementById('monthSelect'); const PDF_LINKS = { '2026-01': 'https://drive.google.com/file/d/1VfkTyo9z9cAGJGXDPCJs0jTAIVSdV5Nc/view?usp=drive_link', '2026-02': 'https://drive.google.com/file/d/1NvgyVUN_-hDYD7Z26G1dr73uKAr3GLUS/view?usp=drive_link', '2026-03': 'https://drive.google.com/file/d/1vsMaB3T6o9nQ0Mx4GHi_ui_tcgrrLO34/view?usp=drive_link', '2026-04': 'https://drive.google.com/file/d/1vsMaB3T6o9nQ0Mx4GHi_ui_tcgrrLO34/view?usp=drive_link' }; const url = PDF_LINKS[sel.value]; if (url) { window.open(url, '_blank'); } else { alert('PDF belum tersedia untuk bulan ini.'); } })()">Print / PDF</button>
   </div>
 </header>
 
